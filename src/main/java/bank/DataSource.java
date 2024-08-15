@@ -45,11 +45,37 @@ public class DataSource {
     return customer;
   }
 
+  public static Account getAccount(int accountId){
+    String sql = "select * from accounts where id = ?";
+    Account account = null;
+
+    try (Connection connection = connect();
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+          statement.setInt(1,accountId);
+
+          try(ResultSet resultSet = statement.executeQuery()) {
+            account = new Account(
+              resultSet.getInt("id"),
+              resultSet.getString("type"),
+              resultSet.getDouble("balance"));
+          
+          }
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+
+        return account;
+  }
+
   public static void main(String[] args){
     connect();
 
-    //testing connection
+    //testing getCustomer
     //Customer customer = getCustomer("ojamblinbx@ycombinator.com");
-    //System.out.println(customer.getName());
+    //System.out.println(customer.getName()); // should be Odelia Jamblin
+
+    //testing getAccount
+    //Account account = getAccount(57187);
+    //System.out.println(account.getBalance()); // should be 7961.94
   }
 }
